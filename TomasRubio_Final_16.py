@@ -3,7 +3,7 @@ import numpy as np
 x_barcos = np.array([4,10,12,80,50,40])
 y_barcos = np.array([100,5,80,50,50,200])
 ts = np.array([3673,3628,3659,3652,3639,3737])
-dt = 1;
+dt = 1.0;
 
 def logprior(v,x,y,t):
     if v > 5000 or v < 360:
@@ -19,21 +19,21 @@ def loglikelihood(v,x,y,t):
     demora = ts-t
     dist = np.sqrt(distx**2+disty**2)
     epsilon = dist - v*(demora)
-    chi2 = np.square(np.divide(epsilon,v*1))
+    chi2 = np.square(np.divide(epsilon,v*dt))
     
     return -(1/2)*np.sum(chi2)
 
 def mcmc(n_points):
     N = n_points
-    v = [1000]
+    v = [1000.0]
     x = [1.0*np.random.randint(-300,300)]
     y = [1.0*np.random.randint(-300,300)]
     t = [0.0]
     for i in range(N):
-        x_new = x[i] + np.random.normal(loc=0,scale=5)
-        y_new = y[i] + np.random.normal(loc=0,scale=5)
-        v_new = v[i] + np.random.normal(loc=0,scale=5)
-        t_new = t[i] + np.random.normal(loc=0,scale=10)
+        x_new = x[i] + np.random.normal(loc=0.0,scale=1.0)
+        y_new = y[i] + np.random.normal(loc=0.0,scale=1.0)
+        v_new = v[i] + np.random.normal(loc=0.0,scale=1.0)
+        t_new = t[i] + np.random.normal(loc=0.0,scale=1.0)
         
         logViejo = loglikelihood(v[i],x[i],y[i],t[i]) + logprior(v[i],x[i],y[i],t[i])
         logNuevo = loglikelihood(v_new,x_new,y_new,t_new) + logprior(v_new,x_new,y_new,t_new)
@@ -66,7 +66,7 @@ def mcmc(n_points):
     sigmat = np.std(np.array(t))
     return vfin,sigmav,xfin,sigmax,yfin,sigmay,tfin,sigmat
 
-v,sv,x,sx,y,sy,t,st = mcmc(1000000)
+v,sv,x,sx,y,sy,t,st = mcmc(100000)
 
 print("coordenada x:",x,"+/-",sx)
 print("coordenada y:",y,"+/-",sy)
